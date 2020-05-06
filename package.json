@@ -1,0 +1,22 @@
+{
+  "name": "mychatapp",
+  "version": "1.0.0",
+  "description": "Live Chatting App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rahat",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "ejs": "^3.1.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "moment": "^2.25.3",
+    "mongoose": "^5.9.12",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "socket.io": "^2.3.0"
+  }
+}
