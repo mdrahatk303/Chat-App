@@ -7,27 +7,32 @@ const socketio=require('socket.io');
 const server=http.createServer(app);
 const io=socketio(server);
 const path=require('path');
-
-var user=[];
 app.use(express.static('./assets'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use('/',require('./routes'));
 
+//list of users with room
+const userList=[]
+  
+
 var clienthandler=function(socket)
 {
     var chatbot="Chatbot"
     //user.push(socket.id);
     socket.on("joinroom",function({username,room}){
-        user.push(socket.id);
+        var id=socket.id;
+       const user={username,room,id}
+        userList.push(user);
+        //console.log(user);
         socket.join(room);
         var obj1={
             msg:`${username} has joined`,
             user_:chatbot,
             user:username
         }
-        socket.broadcast.to(room).emit('newUser',obj1);
+        socket.broadcast.to(room).emit('ne  wUser',obj1);
         socket.on("tweet",function(tweet)
         {
             console.log(tweet+ " "+username);
@@ -41,24 +46,29 @@ var clienthandler=function(socket)
         })
 
         socket.on('disconnect', () => {
-            user.splice(user.indexOf(socket.id),1);
+
+            const index = userList.findIndex(user => user.id === id);
+            if (index !== -1) {
+                userList.splice(index, 1)[0];
+            }
+
             var obj={
                 msg:`${username} has left`,
                 user_:chatbot
             }
             socket.broadcast.to(room).emit('left',obj);
-            console.log(user.length);
+            //console.log(userList.length);
         })
 
         //send userlist to html
-        io.to(room).emit("userList",user);
+        io.to(room).emit("userList",userList);
     })
 
 
     
     
    
-    console.log(user.length);
+    console.log(userList.length);
 
    
 }

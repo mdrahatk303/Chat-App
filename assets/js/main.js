@@ -67,12 +67,16 @@ function output(obj)
 }
 
  //Appending users
- socket.on("userList",(usersName)=>{
+ socket.on("userList",(userList)=>{
      users.innerHTML="";
-     for(user of usersName)
+     for(user of userList)
      {
-         var li=document.createElement('li');
-         li.innerHTML=user;
-         users.appendChild(li);
+
+         if(user.room==room)
+         {
+            var li=document.createElement('li');
+            li.innerHTML=user.username;
+            users.appendChild(li);
+         }
      }
  })
