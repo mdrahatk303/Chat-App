@@ -1,15 +1,66 @@
 const express=require('express');
 const port=8000;
 
+//(the current version of express-session reads and writes cookies directly).
+//so no need go cookie parser
+const session=require('express-session');
+
 const app=express();
 const http=require('http');
 const socketio=require('socket.io');
 const server=http.createServer(app);
 const io=socketio(server);
 const path=require('path');
+const db=require('./config/mongoose');
+app.use(express.urlencoded());
+
+
+//passport auth
+const passport = require('passport');
+const passportLocal = require('./config/passport-local-strategy');
+const MongoStore = require('connect-mongo')(session);
+
+
+//For date-time
+const moment=require('moment');
 app.use(express.static('./assets'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// mongo store is used to store the session cookie in the db
+app.use(session({
+    name: 'chat',
+    // TODO change the secret before deployment in production mode
+    secret: 'blahsomething',
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        maxAge: (1000 * 60*2)
+    },
+    store: new MongoStore(
+        {
+            mongooseConnection: db,
+            autoRemove: 'disabled'
+        
+        },
+        function(err){
+            console.log(err ||  'connect-mongodb setup ok');
+        }
+    )
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(passport.setAuthenticatedUser);
+
+//To prevent going back to unauthorised pages(need to verify whether it is correct or not)
+app.use(function(req, res, next) 
+{
+    console.log("************here in inde.js(server side)**************");
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    next();
+});
 
 app.use('/',require('./routes'));
 
@@ -27,24 +78,31 @@ var clienthandler=function(socket)
         userList.push(user);
         //console.log(user);
         socket.join(room);
+
         var obj1={
             msg:`${username} has joined`,
             user_:chatbot,
-            user:username
+            user:username,
+            time: moment().format('h:mm a')
         }
-        socket.broadcast.to(room).emit('ne  wUser',obj1);
-        socket.on("tweet",function(tweet)
+        //When new user join
+        socket.broadcast.to(room).emit('newUser',obj1);
+
+        //messages between users
+        socket.on("chats",function(tweet)
         {
             console.log(tweet+ " "+username);
             //sending message to all clients
             var obj={
                 msg:tweet,
-                user_:username
+                user_:username,
+                time: moment().format('h:mm a')
             }
             io.to(room).emit('message',obj);
         
         })
 
+        //When a user disconnects
         socket.on('disconnect', () => {
 
             const index = userList.findIndex(user => user.id === id);
@@ -54,7 +112,8 @@ var clienthandler=function(socket)
 
             var obj={
                 msg:`${username} has left`,
-                user_:chatbot
+                user_:chatbot,
+                time: moment().format('h:mm a')
             }
             socket.broadcast.to(room).emit('left',obj);
             //console.log(userList.length);

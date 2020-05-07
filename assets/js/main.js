@@ -20,7 +20,7 @@ function sendmessage(e)
     e.preventDefault();
 
     //sending  message to server
-    socket.emit("tweet",text.value);
+    socket.emit("chats",text.value);
     text.value="";
 }
 
@@ -34,6 +34,8 @@ socket.on("newUser",function(obj)
    
     output(obj);
 })
+
+//User messages
 socket.on("message",function(obj)
 {   
 
@@ -42,7 +44,7 @@ socket.on("message",function(obj)
     
 }) 
 
-
+//Message by bot when a user leave
 socket.on("left",function(obj)
 {
     
@@ -55,7 +57,7 @@ function output(obj)
 {
     var messageToDom=document.createElement('div');
     messageToDom.classList.add('message');
-    messageToDom.innerHTML=`<p class="meta">${obj.user_} <span>9:12pm</span></p>
+    messageToDom.innerHTML=`<p class="meta">${obj.user_} <span>${obj.time}</span></p>
     <p class="text">
         ${obj.msg}
     </p>`;
@@ -75,7 +77,17 @@ function output(obj)
          if(user.room==room)
          {
             var li=document.createElement('li');
-            li.innerHTML=user.username;
+           
+            if(user.username==username)
+            {
+                
+                li.innerHTML=`<strong>${user.username}</strong>`
+               
+                
+            }else
+            {
+                li.innerHTML=user.username;
+            }
             users.appendChild(li);
          }
      }

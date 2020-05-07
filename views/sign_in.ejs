@@ -1,0 +1,48 @@
+<!-- <form action="/create-session" method="POST">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <input type="submit" value="Sign In">
+</form> -->
+
+<link rel="stylesheet" href="/css/sign_in.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<div class="login-page">
+    <div class="form">
+      <form class="register-form" action="/create" method="POST">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+        <button>Sign Up</button>
+        <p class="message">Already registered? <a href="#">Sign In</a></p>
+      </form>
+      <form class="login-form" action="/create-session" method="POST">
+        <input type="email" name="email" placeholder="Email"/>
+        <input type="password" name="password" placeholder="password"/>
+        <button>login</button>
+        <p class="message">Not registered? <a href="#">Create an account</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- <script>
+    window.addEventListener('popstate', function(event) {
+    // The popstate event is fired each time when the current history entry changes.
+      console.log("hereeeeeeeeeeeeeee");
+    var r = confirm("You pressed a Back button! Are you sure?!");
+
+    if (r == true) {
+        // Call Back button programmatically as per user confirmation.
+        history.back();
+        // Uncomment below line to redirect to the previous page instead.
+        // window.location = document.referrer // Note: IE11 is not supporting this.
+    } else {
+        // Stay on the current page.
+        history.pushState(null, null, window.location.pathname);
+    }
+
+    history.pushState(null, null, window.location.pathname);
+
+}, false);
+  </script> -->
+  <script src="js/sign_in_up.js"></script>
