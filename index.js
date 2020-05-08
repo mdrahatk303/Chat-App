@@ -35,7 +35,7 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     cookie: {
-        maxAge: (1000 * 60*2)
+        maxAge: (1000 * 60 * 2 )
     },
     store: new MongoStore(
         {
@@ -57,7 +57,8 @@ app.use(passport.setAuthenticatedUser);
 //To prevent going back to unauthorised pages(need to verify whether it is correct or not)
 app.use(function(req, res, next) 
 {
-    console.log("************here in inde.js(server side)**************");
+    //console.log("************here in inde.js(server side)**************");
+    //if(!req.user)
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     next();
 });
@@ -65,8 +66,9 @@ app.use(function(req, res, next)
 app.use('/',require('./routes'));
 
 //list of users with room
-const userList=[]
-  
+const userList=[];
+
+const Chat=require('./models/chat');
 
 var clienthandler=function(socket)
 {
@@ -89,19 +91,30 @@ var clienthandler=function(socket)
         socket.broadcast.to(room).emit('newUser',obj1);
 
         //messages between users
-        socket.on("chats",function(tweet)
+        socket.on("chats",function(text)
         {
-            console.log(tweet+ " "+username);
+            console.log(text+ " "+username);
             //sending message to all clients
             var obj={
-                msg:tweet,
+                msg:text,
                 user_:username,
                 time: moment().format('h:mm a')
             }
-            io.to(room).emit('message',obj);
-        
+            //entering chat data to db
+            Chat.create({
+                room:room,
+                user:username,
+                msg:text,
+                time:obj.time
+            },function(err,chat_data)
+            {
+                if(err){console.log("Error in creating chat schema",err); return;}
+                console.log(chat_data);
+      
+            })
+            io.to(room).emit(room).emit('message',obj);
         })
-
+ 
         //When a user disconnects
         socket.on('disconnect', () => {
 
@@ -116,7 +129,9 @@ var clienthandler=function(socket)
                 time: moment().format('h:mm a')
             }
             socket.broadcast.to(room).emit('left',obj);
-            //console.log(userList.length);
+             //send userlist to html..had to emit updated userlist from here too as user section was not updated properly in frontend
+            io.to(room).emit("userList",userList);
+            //console.log("in disconnectsection"+" "+userList.length);
         })
 
         //send userlist to html

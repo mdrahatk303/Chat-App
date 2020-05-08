@@ -2,7 +2,7 @@ const express=require('express');
 const router=express.Router();
 const passport=require('passport');
 const app=express();
-
+const usercontroller=require('../controllers/user_controller')
 // //To prevent going back to unauthorised pages(need to verify whether it is correct or not)
 // app.use(function(req, res, next) {
 //     console.log("***************HERE*************");
@@ -47,18 +47,9 @@ router.get('/enter', passport.checkAuthentication,function(req,res)
 })
 
 
-router.get('/chat-room', passport.checkAuthentication,function(req,res)
-{
-    console.log("here in chat room");
-    //res.setHeader('Cache-Control', 'no-cache, no-store');
-    if(req.user)
-    {
+router.get('/chat-room', passport.checkAuthentication,usercontroller.chatRoom)
 
-    }
-    return res.render('chat_room');
-})
 
-const usercontroller=require('../controllers/user_controller')
 
 //user signing in
 router.post('/create-session',passport.authenticate('local',{failureRedirect:'/enter'}),usercontroller.create_session);

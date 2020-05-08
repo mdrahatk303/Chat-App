@@ -16,7 +16,7 @@ const User_Schema=mongoose.Schema({
     },
     chat:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'ChatSchema'
+        ref:'Chatschema'
     }
 },
 {

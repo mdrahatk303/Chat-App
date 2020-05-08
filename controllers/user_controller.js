@@ -1,5 +1,5 @@
 const User=require('../models/users');
-
+const Chat=require('../models/chat');
 //user login
 module.exports.create_session= async function(req,res)
 {
@@ -9,7 +9,8 @@ module.exports.create_session= async function(req,res)
         {
             if(user.password==req.body.password)
             {
-                return res.redirect('/enter');
+                console.log("Enetred");
+                return res.render('enter',{user});
             }
             else
             {
@@ -58,3 +59,23 @@ module.exports.destroy=function(req,res)
     req.logout();
     return res.redirect('/');
 }
+
+
+module.exports.chatRoom=async function(req,res)
+{
+    //console.log(req.query.room);
+    try 
+    {
+        let chats=await Chat.find({room:req.query.room});
+        // for(chat of chats)
+        // console.log(chat.user_);
+        return res.render('chat_room',{chats});
+        
+    } 
+    catch (error) 
+    {
+        console.log("**************ERROR***************",error);
+    }
+   
+}
+

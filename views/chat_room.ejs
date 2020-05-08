@@ -22,7 +22,16 @@
 
         </ul>
       </div>
-      <div class="chat-messages"></div>
+      <div class="chat-messages">
+      
+      <% for(chat of chats){%>
+        
+            <div class="message">
+              <p class="meta"><%=chat.user%><span><%=chat.time%></span></p>
+              <p class="text"><%=chat.msg%></p>
+            </div>
+       <% }%>
+      </div>
     </main>
     <div class="chat-form-container">
       <form id="chat-form">

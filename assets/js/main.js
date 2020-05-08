@@ -38,7 +38,6 @@ socket.on("newUser",function(obj)
 //User messages
 socket.on("message",function(obj)
 {   
-
     console.log('Message from server->',obj.msg);
     output(obj);
     
