@@ -1,0 +1,19 @@
+#layout-footer 
+{
+  color: white;
+  background:  #7386ff;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 0px;
+  display: flex;
+  justify-content: flex-start; 
+}
+#layout-footer a 
+{
+    color: white;
+    text-decoration: none;
+}
+#layout-footer .footer-nav ul 
+{
+    list-style: none; 
+}

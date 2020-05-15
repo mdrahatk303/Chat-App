@@ -1,7 +1,12 @@
 const socket=io();
 const chatMessages = document.querySelector('.chat-messages');
+//For chat form
 const text=document.querySelector('input')
+const image=document.querySelector('image')
+
+//so that scroll down automatically
 const users=document.getElementById('users');
+chatMessages.scrollTop = chatMessages.scrollHeight;
 
 //for username and room name
 var queryString = window.location.search;
@@ -15,14 +20,18 @@ socket.emit("joinroom",{username,room});
 
 //for submitting the form->for messages
 var form=addEventListener("submit",sendmessage);
+
 function sendmessage(e)
 {
+    // var  file = document.f1.avatar.value.split("\\") ;
+    // console.log(file[file.length-1]);
+   
     e.preventDefault();
-
     //sending  message to server
     socket.emit("chats",text.value);
     text.value="";
 }
+
 
 //For room name
 var roomname=document.getElementById('room-name');
@@ -56,7 +65,7 @@ function output(obj)
 {
     var messageToDom=document.createElement('div');
     messageToDom.classList.add('message');
-    messageToDom.innerHTML=`<p class="meta">${obj.user_} <span>${obj.time}</span></p>
+    messageToDom.innerHTML=`<p class="meta">${obj.user_} <span> ${obj.time}</span></p>
     <p class="text">
         ${obj.msg}
     </p>`;
@@ -91,3 +100,58 @@ function output(obj)
          }
      }
  })
+
+//NEW CHANGES
+//For images
+
+$('#image').bind('change', function(e){
+    var data = e.originalEvent.target.files[0];
+    readThenSendFile(data);      
+});
+
+function readThenSendFile(data){
+
+    var reader = new FileReader();
+    reader.onload = function(evt){
+        var msg ={};
+        msg.username = username;
+        msg.file = evt.target.result;
+        msg.fileName = data.name; 
+        socket.emit('base64 file', msg);
+        //console.log(msg);
+    };
+   
+    reader.readAsDataURL(data);
+}
+
+
+//Appending base64 image
+socket.on('addimage',(base64image)=>
+{
+   
+    let messageToDom=document.createElement('div');
+    messageToDom.classList.add('message');
+    messageToDom.innerHTML=`<p class="meta">${base64image.username}<span> ${base64image.time}</span></p>
+    <p class="text">
+    '<img src="${base64image.file}" width="400 px" height="400 px">'
+    </p>`;
+
+    document.querySelector('.chat-messages').appendChild(messageToDom);
+     // Scroll down
+     chatMessages.scrollTop = chatMessages.scrollHeight;
+    // document.querySelector('.chat-messages').appendChild(messageToDom);
+
+    //     $('.chat-messages')
+    //     .append($('.message')
+    //     .append($('.text')
+    //     .append(
+    //         '<img src="'+ base64image+'" >'
+    //     )))
+    
+    
+})
+        
+
+
+// <p class="meta"><%=chat.user%><span><%=chat.time%></span></p>
+//               <p class="text"><%=chat.msg%></p>

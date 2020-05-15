@@ -5,18 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <link rel="stylesheet" href="css/style.css">
-  <title>Chat App</title>
+
+  <!-- For jQuery -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <title>Let's Chat</title>
 </head>
 <body>
+  <%- include('_header'); -%>
   <div class="chat-container">
     <header class="chat-header">
-      <h1><i class="fas fa-smile"></i> ChatCord</h1>
+      <h1><i class="fas fa-smile"></i> Let's Chat</h1>
       <a href="/enter" class="btn">Leave Room</a>
     </header>
     <main class="chat-main">
       <div class="chat-sidebar">
         <h3><i class="fas fa-comments"></i> Room Name:</h3>
-        <h2 id="room-name">JavaScript</h2>
+        <h2 id="room-name"></h2>
         <h3><i class="fas fa-users"></i> Users</h3>
         <ul id="users">
 
@@ -29,19 +33,29 @@
             <div class="message">
               <p class="meta"><%=chat.user%><span><%=chat.time%></span></p>
               <p class="text"><%=chat.msg%></p>
+              <!-- For Image -->
+              <%if(chat.img){%>
+              <p class="text"><img src="<%=chat.img%>" alt="Image" width="400 px" height="400 px" ></p>
+              <%}%>
             </div>
        <% }%>
       </div>
     </main>
+    <!-- <p class="imagefile"></p> -->
     <div class="chat-form-container">
-      <form id="chat-form">
+
+      <!-- CHANGES FOR UPLOADING PIC -->
+      <form id="chat-form" enctype="multipart/form-data" method="POST" action="/messages" name="f1">
         <input
           id="msg"
           type="text"
-          placeholder="Enter Message"
-          required
+          placeholder="Enter Message"   
+          name="text" 
+           
           autocomplete="off"
         />
+        <p><input type="file"  accept="image/*" name="avatar" id="image" style="display: none;"></p>
+        <p><label for="image" style="cursor: pointer;color: #667aff;margin-left:-20px;"><i class="fas fa-image"></i></label></p>
         <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
       </form>
     </div>
@@ -55,4 +69,7 @@
     <script src="/socket.io/socket.io.js"></script>
   <script src="js/main.js"></script>
 </body>
-</html>
+</html> 
+
+
+ 

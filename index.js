@@ -4,6 +4,8 @@ const port=8000;
 //(the current version of express-session reads and writes cookies directly).
 //so no need go cookie parser
 const session=require('express-session');
+//for layout
+const expressLayouts = require('express-ejs-layouts');
 
 const app=express();
 const http=require('http');
@@ -12,18 +14,28 @@ const server=http.createServer(app);
 const io=socketio(server);
 const path=require('path');
 const db=require('./config/mongoose');
-app.use(express.urlencoded());
 
+app.use(express.urlencoded());
+ 
+//For flash messages
+const flash=require('connect-flash');
+const flashmidware=require('./config/flash_middleware');
 
 //passport auth
 const passport = require('passport');
 const passportLocal = require('./config/passport-local-strategy');
 const MongoStore = require('connect-mongo')(session);
 
+//ejs layout
+app.use(expressLayouts);
+// extract style and scripts from sub pages into the layout
+app.set('layout extractStyles', true);
+app.set('layout extractScripts', true);
 
-//For date-time
+//For date-time 
 const moment=require('moment');
 app.use(express.static('./assets'));
+app.use('/uploads',express.static(path.join(__dirname+'/uploads')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -49,10 +61,17 @@ app.use(session({
     )
 }));
 
+
+//Flash messages
+app.use(flash());
+app.use(flashmidware.setFlash);
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(passport.setAuthenticatedUser);
+
+
+
 
 //To prevent going back to unauthorised pages(need to verify whether it is correct or not)
 app.use(function(req, res, next) 
@@ -72,16 +91,38 @@ const Chat=require('./models/chat');
 
 var clienthandler=function(socket)
 {
-    var chatbot="Chatbot"
+    
+    var chatbot="Chatbot";
     //user.push(socket.id);
     socket.on("joinroom",function({username,room}){
+
+        //For images
+        socket.on('base64 file',(image)=>{
+            image.time=moment().format('h:mm a')
+            io.to(room).emit("addimage",image);
+            //entering chat data to db
+            Chat.create({
+                room:room,
+                user:username,
+                img:image.file,
+                time:image.time,
+               
+            },  function(err,chat_data)
+            {
+                if(err){console.log("Error in creating chat schema",err); return;}
+                //console.log(chat_data);
+      
+            })
+           
+        })
+
         var id=socket.id;
        const user={username,room,id}
         userList.push(user);
         //console.log(user);
         socket.join(room);
 
-        var obj1={
+        var obj1={ 
             msg:`${username} has joined`,
             user_:chatbot,
             user:username,
@@ -91,6 +132,7 @@ var clienthandler=function(socket)
         socket.broadcast.to(room).emit('newUser',obj1);
 
         //messages between users
+        
         socket.on("chats",function(text)
         {
             console.log(text+ " "+username);
@@ -105,14 +147,17 @@ var clienthandler=function(socket)
                 room:room,
                 user:username,
                 msg:text,
-                time:obj.time
+                time:obj.time,
+               
             },function(err,chat_data)
             {
                 if(err){console.log("Error in creating chat schema",err); return;}
-                console.log(chat_data);
+                //console.log(chat_data);
       
             })
-            io.to(room).emit(room).emit('message',obj);
+           
+           
+            io.to(room).emit('message',obj);
         })
  
         //When a user disconnects
@@ -139,8 +184,7 @@ var clienthandler=function(socket)
     })
 
 
-    
-    
+   
    
     console.log(userList.length);
 
@@ -157,3 +201,5 @@ server.listen(port,function(err)
 
     console.log(`Server is running on port: ${port}`);
 }) 
+
+

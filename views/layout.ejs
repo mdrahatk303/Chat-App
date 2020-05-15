@@ -1,0 +1,48 @@
+<html>
+    <head>
+      
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js"></script>
+       
+        <%- style %>
+    </head>
+    <body>
+       
+
+        <!-- Flash messages without noty -->
+         <!-- <% if(locals.flash.success_message && flash.success_message.length>0){%>
+            
+           <h1 style="color: green;"><%=flash.success_message%>!!</h1> 
+            <%}%> -->
+       
+        <%- body %>
+        <!-- <%- include('_footer'); -%> -->
+      
+        <%- script %>
+
+        <script>
+            <%if(flash.success_message && flash.success_message.length>0){%>
+                    new Noty({
+                        theme:'relax',
+                        text: "<%=flash.success_message%>",
+                        type:'success',
+                        layout:'topCenter',
+                        timeout:1500,
+                        
+                    }).show();
+                <%}%> 
+
+                <%if(flash.error_message && flash.error_message.length>0){%>
+                    new Noty({
+                        theme:'relax',
+                        text: "<%=flash.error_message%>",
+                        type:'error',
+                        layout:'topCenter',
+                        timeout:1500,
+                        
+                    }).show();
+                <%}%> 
+        </script>
+       
+    </body>
+</html> 

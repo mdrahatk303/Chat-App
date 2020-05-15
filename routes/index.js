@@ -19,7 +19,6 @@ router.get('/',function(req,res)
     // res.setHeader('Cache-Control', 'no-cache, no-store');
     if (req.isAuthenticated()){
         {
-           
             return res.redirect('/enter');
         }
     }
@@ -52,10 +51,16 @@ router.get('/chat-room', passport.checkAuthentication,usercontroller.chatRoom)
 
 
 //user signing in
-router.post('/create-session',passport.authenticate('local',{failureRedirect:'/enter'}),usercontroller.create_session);
+//Failure redirect must be same page for working of flash messages
+//that are kept in passport-local page
+router.post('/create-session',passport.authenticate('local',{failureRedirect:'/'}),usercontroller.create_session);
 
 //registration of user(sign-up)
 router.post('/create',usercontroller.create);
+
+
+//Message route
+router.post('/messages',passport.checkAuthentication,usercontroller.texted);
 
 //logout
 router.get('/sign-out',usercontroller.destroy);
