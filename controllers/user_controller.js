@@ -92,8 +92,10 @@ module.exports.destroy=function(req,res)
 
 
 module.exports.chatRoom=async function(req,res)
-{
-    //console.log(req.query.room);
+{ 
+     //console.log(req.query.room+" &&&&&&&&&&&&&");
+     //console.log(req.body);
+    // let username=req.query.username;
     try 
     {
         let chats=await Chat.find({room:req.query.room});
@@ -102,7 +104,7 @@ module.exports.chatRoom=async function(req,res)
 
         //SETTING ROOM VALUE GLOBALLY SO THAT IT CAN BE USED IN TEXTING FUNCTION TO CREATE CHAT SCHEMA
         global.room=req.query.room;
-        
+       // console.log(username+"&&&&&&&******************");
         return res.render('chat_room',{chats});
         
     } 
