@@ -1,5 +1,5 @@
 const express=require('express');
-const port=8000;
+const port=process.env.port|8000;
 
 //(the current version of express-session reads and writes cookies directly).
 //so no need go cookie parser

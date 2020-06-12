@@ -4,10 +4,11 @@
   "description": "Live Chatting App",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Rahat",
-  "license": "ISC",
+  "license": "ISC", 
   "dependencies": {
     "connect-flash": "^0.1.1",
     "connect-mongo": "^3.2.0",
